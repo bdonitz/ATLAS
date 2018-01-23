@@ -56,12 +56,18 @@ void setup()
   // open the file. note that only one file can be open at a time,
   // so you have to close this one before opening another.
   myFile = SD.open("log.csv", FILE_WRITE);
+
+  int year;
+  byte month, day, hour, minute, second, hundredths;
+  unsigned long fix_age;
+ 
+  gps.crack_datetime(&year, &month, &day,&hour, &minute, &second, &hundredths, &fix_age);
  
   // if the file opened okay, write to it:
   if (myFile) {
     Serial.print("Writing to test.txt...");
     //myFile.println("Beginning new log at " + String(hour) + ":" + String(minutes) + ":" + String(second));
-    myFile.println("Beginning new log at " + String(millis()));
+    myFile.println("Beginning new log at " +String(year) + "/" + String(month) + "/" + String(day) + "_" + String(hour) + ":" + String(minute) + ":" + String(second));
   // close the file:
     myFile.close();
     Serial.println("done.");
@@ -240,7 +246,6 @@ String GPS() {
     GPS_data += String(flat) + ",";
     GPS_data += String(flon) +",";
     GPS_data += String(falt) + ",";
-    
     
   }
  else{
