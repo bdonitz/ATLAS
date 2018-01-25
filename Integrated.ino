@@ -6,17 +6,18 @@
 #define aref_voltage 5
 
 // sensor pins
-int tempSensor = 1;
+int tempSensor = 10;
 int xPin = 13;
 int yPin = 14;
 int zPin = 15;
 int SDPin = 53;
 int tempReading; 
-#define HIH4030_OUT A0
-#define THERMISTORPIN A7   
+#define HIH4030_OUT A7
+#define THERMISTORPIN A8   
 
 TinyGPS gps;
-SoftwareSerial ss(3,2);
+SoftwareSerial nss(3,2);
+boolean newData = false;
 
 #define HIH4030_SUPPLY 5
 HIH4030 sensorSpecs(HIH4030_OUT, HIH4030_SUPPLY);
@@ -40,6 +41,7 @@ void setup()
 {
   Serial.begin(9600);
   ss.begin(9600);
+  nss.begin(9600);
   Serial.print("Initializing SD card...");
   // On the Ethernet Shield, CS is pin 4. It's set as an output by default.
   // Note that even if it's not used as the CS pin, the hardware SS pin 
@@ -104,6 +106,33 @@ String printHumData(HIH4030 sensor, float temperature){
   return hum_data;
   
 }
+
+String pressuredata() {
+   float pressure = readPressure(A0);
+    float millibars = pressure/100;
+ 
+  String pressure_data = "";
+ 
+    Serial.println();
+    Serial.print("Pressure = ");
+    Serial.print(pressure);
+    Serial.println(" pascals");
+    Serial.print("Pressure = ");
+    Serial.print(millibars);
+    Serial.println(" millibars");
+  
+  pressure_data += pressure;
+  
+  return pressure_data;
+}
+ 
+
+float readPressure(int pin){
+    int pressureValue = analogRead(pin);
+    float pressure=((pressureValue/1024.0)+0.095)/0.000009;
+    return pressure;
+}
+
 
 String printAccelData() {
   float x,y,z;
@@ -189,7 +218,6 @@ float printThermistorData() {
 }
 
 String GPS() {
-  bool newData = false;
   unsigned long chars;
   unsigned short sentences, failed;
   String GPS_data = "";
@@ -197,10 +225,9 @@ String GPS() {
   // For one second we parse GPS data and report some key values
   for (unsigned long start = millis(); millis() - start < 1000;)
   {
-    while (ss.available())
+    while (nss.available())
     {
-      char c = ss.read();
-       //6Serial.write(c); // uncomment this line if you want to see the GPS data flowing
+      char c = nss.read();
       if (gps.encode(c)) // Did a new valid sentence come in?
         newData = true;
     }
@@ -264,14 +291,15 @@ void loop() {
   //data = data + String(second())                  + ',';
   //data = data + String(millis()) + ',';
 
-  float temp = getTemperature();                  
+  float temp = getTemperature();        
   data += printHumData(sensorSpecs, temp);
+  data += pressuredata() + ',';
   data += String(printThermistorData()) + ',';
   data += printAccelData();   
   data += GPS(); 
   Serial.println("");
 
-  //print data=hour:minute:second,tempC_tmp,relHum,absHum,tempC_thermistor,xAccel,yAccel,zAccel
+  //print data=hour:minute:second,tempC_tmp,relHum,absHum,pressure_Pa,tempC_thermistor,xAccel,yAccel,zAccel
 
   if(SD.exists("log.csv")) {
     if(myFile = SD.open("log.csv", FILE_WRITE)){
@@ -289,3 +317,4 @@ void loop() {
   delay(100);   
 
 }
+
