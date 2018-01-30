@@ -16,7 +16,7 @@ int tempReading;
 #define THERMISTORPIN A8   
 
 TinyGPS gps;
-SoftwareSerial nss(3,2);
+SoftwareSerial nss(66,1);
 boolean newData = false;
 
 #define HIH4030_SUPPLY 5
@@ -40,8 +40,8 @@ String data = "";
 void setup()
 {
   Serial.begin(9600);
-  ss.begin(9600);
   nss.begin(9600);
+  nss.begin(9600); //this can probably be taken out
   Serial.print("Initializing SD card...");
   // On the Ethernet Shield, CS is pin 4. It's set as an output by default.
   // Note that even if it's not used as the CS pin, the hardware SS pin 
@@ -245,9 +245,9 @@ String GPS() {
  
     gps.crack_datetime(&year, &month, &day,&hour, &minute, &second, &hundredths, &fix_age);
     Serial.print(month);
-    Serial.print(",");
+    Serial.print("/");
     Serial.print(day);
-    Serial.print(",");
+    Serial.print("/");
     Serial.println(year);
     
     Serial.print(hour);
@@ -259,15 +259,11 @@ String GPS() {
 
    GPS_data += String(year) + "/" + String(month) + "/" + String(day) + "_" + String(hour) + ":" + String(minute) + ":" + String(second) + ",";
     
-//  Serial.print("LAT=");
-//    Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
-//  Serial.print(" LON=");
- //   Serial.print(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
-//   Serial.print(" SAT=");
-//   Serial.print(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
-//   Serial.print(" Altitude=");
+    Serial.print("LAT: ");
     Serial.println(flat,6);
+    Serial.print("LONG: ");
     Serial.println(flon,6);
+    Serial.print("ALT: ");
     Serial.println(falt);
 
     GPS_data += String(flat) + ",";
@@ -317,4 +313,5 @@ void loop() {
   delay(100);   
 
 }
+
 
