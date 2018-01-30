@@ -287,7 +287,7 @@ void loop() {
 
   float temp = getTemperature();
   data += printHumData(sensorSpecs, temp);
-  data += pressuredata() + ',';
+  data += pessuredata() + ',';
   data += String(printThermistorData()) + ',';
   data += printAccelData();
   data += GPS();
