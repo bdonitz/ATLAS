@@ -12,6 +12,7 @@ int xPin = 13;
 int yPin = 14;
 int zPin = 15;
 int SDPin = 53;
+int pressurePin = 4;
 int tempReading;
 #define HIH4030_OUT A7
 #define THERMISTORPIN A8
@@ -90,31 +91,34 @@ String printHumData(HIH4030 sensor, float temperature) {
   Serial.print(sensor.vout());
   Serial.println(" V");
   Serial.print("Relative Humidity = ");
-  Serial.print(sensor.getSensorRH());
+  double RH = sensor.getSensorRH();
+  Serial.print(RH);
   Serial.println(" %");
   Serial.print("True Relative Humidity = ");
-  Serial.print(sensor.getTrueRH(temperature));
+  double TrueRH = sensor.getTrueRH(temperature);
+  Serial.print(TrueRH);
   Serial.println(" %");
 
   String hum_data = "";
   hum_data += String(temperature) + ",";
-  hum_data += String(sensor.getSensorRH()) + ",";
-  hum_data += String(sensor.getTrueRH(temperature)) + ",";
+  hum_data += String(RH) + ",";
+  hum_data += String(TrueRH) + ",";
 
   return hum_data;
 
 }
 
 String pessuredata() {
-  float pressure = readPressure(A0);
+  float pressure = readPressure(pressurePin);
   float millibars = pressure / 100;
+  float kPa = pressure/1000;
 
   String pressure_data = "";
 
   Serial.println();
   Serial.print("Pressure = ");
-  Serial.print(pressure);
-  Serial.println(" pascals");
+  Serial.print(kPa);
+  Serial.println(" kPa");
   Serial.print("Pressure = ");
   Serial.print(millibars);
   Serial.println(" millibars");
@@ -135,18 +139,33 @@ float readPressure(int pin) {
 String printAccelData() {
   float x, y, z;
 
-  x = analogRead(13);
-  y = analogRead(14);
-  z = analogRead(15);
+  x = analogRead(xPin);
+  y = analogRead(yPin);
+  z = analogRead(zPin);
 
-  x = x - 376;
-  x /= 20.0;
+  double x_high = 592;
+  double x_low = 525;
+  double x_mid = (x_high + x_low)/2.0;
+  double x_diff = x_high - x_low;
 
-  y = y - 345;
-  y /= 20.0;
+  double y_high = 549;
+  double y_low = 480;
+  double y_mid = (y_high + y_low)/2.0;
+  double y_diff = y_high - y_low;
 
-  z -= 369;
-  z /= 20.0;
+  double z_high = 544;
+  double z_low = 485;
+  double z_mid = (z_high + z_low)/2.0;
+  double z_diff = z_high - z_low;
+
+  x -= (x_mid);
+  x /= x_diff/2.0;
+
+  y -= y_mid;
+  y /= y_diff/2.0;
+
+  z -= z_mid;
+  z /= z_diff/2.0;
 
   Serial.print("accelerations are x, y, z: ");
   Serial.print(x , DEC);    // print the acceleration in the X axis
@@ -182,7 +201,7 @@ float printThermistorData() {
   // take N samples in a row, with a slight delay
   for (i = 0; i < NUMSAMPLES; i++) {
     samples[i] = analogRead(THERMISTORPIN);
-    Serial.print("Reading #"); Serial.print(i); Serial.print(" = "); Serial.println(samples[i]);
+    //Serial.print("Reading #"); Serial.print(i); Serial.print(" = "); Serial.println(samples[i]);
     delay(10);
   }
 
@@ -234,6 +253,7 @@ String GPS() {
   if (newData)
   {
     float flat, flon;
+    char flat_string[15], flon_string[15];
 
     float falt = gps.f_altitude();
     unsigned long age;
@@ -255,6 +275,9 @@ String GPS() {
     Serial.println(second);
     gps.f_get_position(&flat, &flon, &age);
 
+    dtostrf(flat, 7, 4, flat_string);
+    dtostrf(flon, 7, 4, flon_string);
+
     GPS_data += String(year) + "/" + String(month) + "/" + String(day) + "_" + String(hour) + ":" + String(minute) + ":" + String(second) + ",";
 
     Serial.print("LAT: ");
@@ -264,9 +287,9 @@ String GPS() {
     Serial.print("ALT: ");
     Serial.println(falt);
 
-    GPS_data += String(flat) + ",";
+    GPS_data += String(flat_string) + ",";
     GPS_data += String(flon) + ",";
-    GPS_data += String(falt) + ",";
+    GPS_data += String(flon_string) + ",";
 
   }
   else {
