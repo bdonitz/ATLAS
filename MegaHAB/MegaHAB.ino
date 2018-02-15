@@ -179,7 +179,7 @@ static const uint8_t PROGMEM _sine_table[] = {
 #include "sine_table.h"
 };
 
-#include <Adafruit_Sensor.h>
+//#include <Adafruit_Sensor.h>
 //#include <Adafruit_9DOF.h>
 
 //#include <Adafruit_L3GD20_U.h> //UNIFIED GYRO

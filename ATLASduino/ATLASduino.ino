@@ -559,9 +559,29 @@ float printThermistorData() {
   return Temp;
 }
 
+bool check_term_conditions(float lat, float lon, float alt, int flight_time) {
+  bool terminate = false;
+
+  float lat_min = -99999;
+  float lat_max = 99999;
+  int alt_max = 99999999999;
+  int max_time = 99999999999999999;
+  
+  if (lat < lat_min) terminate = true;
+  else if (lat > mat_max) terminate = true;
+  else if (lon < lon_min) terminate = true;
+  else if (long > lon_max) terminate = true;
+  else if (alt > lat_max) termiante = true;
+  else if (flight_time > max_time) terminate = true;
+
+  return terminate;
+}
+
 //---Loop---------------------------------------------------------------------------------------------------------
 
 void loop() {
+
+  bool terminated = false;
 
   Serial.println(millis()/1000);
 
