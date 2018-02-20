@@ -155,6 +155,10 @@ const int HUMIDITY = 10;
 // Pressure
 const int MPX = 9;
 
+//FTU
+const int FTU = 42;
+bool terminated = false;
+
 #define HIH4030_SUPPLY 5
 #define HIH4030_OUT A10
 HIH4030 sensorSpecs(HIH4030_OUT, HIH4030_SUPPLY);
@@ -302,8 +306,8 @@ void setup()  {
   pinMode(y_pin, OUTPUT);
   pinMode(z_pin, OUTPUT);
   
-  pinMode(42, OUTPUT); 
-  digitalWrite(42,LOW);
+  pinMode(FTU, OUTPUT); 
+  digitalWrite(FTU,LOW);
   //pinMode(CUT_1_PIN, OUTPUT); // dropper
   //pinMode(CUT_2_PIN, OUTPUT); // reflector
   //pinMode(CUT_3_PIN, OUTPUT); // cutdown
@@ -575,7 +579,7 @@ bool check_term_conditions(float lat, float lon, float alt, int flight_time) {
   float lon_min = -99999999;
   float lon_max = 999999;
   int alt_max = 99999999999;
-  int max_time = 99999999999999999;
+  int max_time = 5; // seconds
   
   if (lat < lat_min) terminate = true;
   else if (lat > lat_max) terminate = true;
@@ -586,13 +590,14 @@ bool check_term_conditions(float lat, float lon, float alt, int flight_time) {
 
   return terminate;
 }
-//  void cut()
-//  {
-//     digitalWrite(42,HIGH);
-//     Serial.println("CUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
-//     delay(20000);
-//     digitalWrite(42,LOW);
-//  }
+
+  void termiante() {
+     digitalWrite(FTU,HIGH);
+     Serial.println("CUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
+     wait(5000); // cut for 5 seconds
+     digitalWrite(FTU,LOW);
+     Serial.println("END CUT");
+  }
 
 //---Loop---------------------------------------------------------------------------------------------------------
 
@@ -785,12 +790,17 @@ void loop() {
 
   //---Nichrome Cutter Control---
   
-  if(runtime >= 10000){
-    digitalWrite(42,HIGH); 
-    //delay(10000);
-  }
-  if(runtime >= 20000){
-    digitalWrite(42,LOW);
+//  if(runtime >= 10000){
+//    digitalWrite(42,HIGH); 
+//    //delay(10000);
+//  }
+//  if(runtime >= 20000){
+//    digitalWrite(42,LOW);
+//  }
+
+  if (check_term_conditions(latitude_, longitude_, altitude_, millis()/1000) && !terminated) {
+    terminated = true;
+    termiante();
   }
   
 
