@@ -1,3 +1,5 @@
+
+
 /*
   February 2018
   Benjamin Donitz
@@ -88,7 +90,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
-#include <OneWire.h>
+//#include <OneWire.h>
 #include <DallasTemperature.h> // DO WE NEED THIS?
 #include <SoftwareSerial.h>
 #include "ax25modem.h"
@@ -118,6 +120,7 @@ float seaLevelhPa = 1016.8; // pressure at sea level, hPa (yes, hectopascals or 
 //const unsigned long CUT_1_TIMER = 7200; // max countdown until cut, secs (105 min based on prediction +10, +5)
 //const unsigned long CUT_2_TIMER = 9000; //max countdown until cut, secs (135 min based on prediction +10 +5)
 //const unsigned long CUT_3_TIMER = 25200; //-1; //max countdown until cut, secs
+
 
 // Advanced TX variables (not recommeneded for modification)
 #define ASCII 7          // ASCII 7 or 8
@@ -169,6 +172,8 @@ uint16_t samples[NUMSAMPLES];
 //const int CUT_1_PIN = 22; //arduino pins that get set high to cut
 //const int CUT_2_PIN = 23; //      ''
 //const int CUT_3_PIN = 24; //      ''
+
+unsigned long runtime = 0;
 
 int cut_1_progress = 0; //0 = not started, 1 = in progress, 2 = done
 int cut_2_progress = 0; //0 = not started, 1 = in progress, 2 = done
@@ -296,6 +301,9 @@ void setup()  {
   pinMode(x_pin, OUTPUT);
   pinMode(y_pin, OUTPUT);
   pinMode(z_pin, OUTPUT);
+  
+  pinMode(42, OUTPUT); 
+  digitalWrite(42,LOW);
   //pinMode(CUT_1_PIN, OUTPUT); // dropper
   //pinMode(CUT_2_PIN, OUTPUT); // reflector
   //pinMode(CUT_3_PIN, OUTPUT); // cutdown
@@ -578,13 +586,19 @@ bool check_term_conditions(float lat, float lon, float alt, int flight_time) {
 
   return terminate;
 }
+//  void cut()
+//  {
+//     digitalWrite(42,HIGH);
+//     Serial.println("CUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
+//     delay(20000);
+//     digitalWrite(42,LOW);
+//  }
 
 //---Loop---------------------------------------------------------------------------------------------------------
 
 void loop() {
-
-  bool terminated = false;
-
+  runtime = millis();
+  
   Serial.println(millis()/1000);
 
   //---Update and Transmit---
@@ -770,6 +784,16 @@ void loop() {
 
 
   //---Nichrome Cutter Control---
+  
+  if(runtime >= 10000){
+    digitalWrite(42,HIGH); 
+    //delay(10000);
+  }
+  if(runtime >= 20000){
+    digitalWrite(42,LOW);
+  }
+  
+
   /*
   alt_bmp = bmp.readAltitude(seaLevelhPa);
   
