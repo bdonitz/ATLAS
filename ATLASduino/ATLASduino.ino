@@ -96,17 +96,17 @@
 #include "ax25modem.h"
 
 // TX and RX activation
-//#define APRS    // Comment to turn off APRS
-//#define LOS     // Comment to turn off LOS (line of sight)
+#define APRS    // Comment to turn off APRS
+#define LOS     // Comment to turn off LOS (line of sight)
 #define GPS     // Comment to turn off GPS
 
 // TX variables
-#define MTX2_FREQ 434.485 // LOS frequency, format 434.XXX
+#define MTX2_FREQ 433.100 // LOS frequency, format 434.XXX
 #define APRS_CALLSIGN "KM6QCM" // APRS callsign
 char callsign[9] = "KM6QCM";  // LOS callsign, MAX 9 CHARACTERS
 #define POWERSAVING      // Enables GPS powersaving mode
 #define TXDELAY 0        // Delay between sentence TX's
-int APRS_TX_INTERVAL = 79000;  // APRS TX interval in seconds
+int APRS_TX_INTERVAL = 12000;  // APRS TX interval in seconds
 
 // Cut variables
 float seaLevelhPa = 1016.8; // pressure at sea level, hPa (yes, hectopascals or mbar) UPDATE BEFORE LAUNCH
