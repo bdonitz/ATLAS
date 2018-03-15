@@ -142,22 +142,33 @@ int alt_bmp;
 const int x_pin = 13;
 const int y_pin = 14;
 const int z_pin = 15;
+int x_tel = 2;
+int y_tel = 2;
+int z_tel = 2;
 
 // TMP Sensor
 const int TMP = 12;
+int temperatureC = -999;
 
 // Thermistor
 const int THERMISTOR = 11;
+int therm = -999;
 
 // Humidity
 const int HUMIDITY = 10;
+int RH = -999;
+int TrueRH = -999;
 
 // Pressure
 const int MPX = 9;
+int kPa = -999;
 
 //FTU
 const int FTU = 42;
-bool terminated = false;
+int terminated = 0;
+
+//Magnetometer
+float mag = 0; 
 
 #define HIH4030_SUPPLY 5
 #define HIH4030_OUT A10
@@ -420,6 +431,8 @@ void setup()  {
 //---Sensor Functions
 String printHumData(HIH4030 sensor, float temperature) {
 
+  float RH_temp, TrueRH_temp;
+
   Serial.print("Temperature = ");
   Serial.print(temperature);
   float tempF = (temperature * 9 / 5) + 32;
@@ -428,18 +441,21 @@ String printHumData(HIH4030 sensor, float temperature) {
   Serial.print(sensor.vout());
   Serial.println(" V");
   Serial.print("Relative Humidity = ");
-  double RH = sensor.getSensorRH();
-  Serial.print(RH);
+  RH_temp = sensor.getSensorRH();
+  Serial.print(RH_temp);
   Serial.println(" %");
   Serial.print("True Relative Humidity = ");
-  double TrueRH = sensor.getTrueRH(temperature);
-  Serial.print(TrueRH);
+  TrueRH_temp = sensor.getTrueRH(temperature);
+  Serial.print(TrueRH_temp);
   Serial.println(" %");
+
+  RH = (int) RH_temp;
+  TrueRH = (int) TrueRH_temp;
 
   String hum_data = "";
   hum_data += String(temperature) + ",";
-  hum_data += String(RH) + ",";
-  hum_data += String(TrueRH) + ",";
+  hum_data += String(RH_temp) + ",";
+  hum_data += String(TrueRH_temp) + ",";
 
   return hum_data;
 
@@ -448,7 +464,7 @@ String printHumData(HIH4030 sensor, float temperature) {
 String pessuredata() {
   float pressure = readPressure(MPX);
   float millibars = pressure / 100;
-  float kPa = pressure/1000;
+  kPa = (int) pressure;
 
   String pressure_data = "";
 
@@ -474,7 +490,8 @@ float readPressure(int pin) {
 
 
 String printAccelData() {
-  float x, y, z;
+
+  float x,y,z;
 
   x = analogRead(x_pin);
   y = analogRead(y_pin);
@@ -517,18 +534,24 @@ String printAccelData() {
   accel_data += String(y) + ',';
   accel_data += String(z) + ',';
 
+  x_tel = (int) (x*100);
+  y_tel = (int) (y*100);
+  z_tel = (int) (z*100);
+
   return accel_data;
 }
 
-float getTemperature()
+void getTemperature()
 {
   int tempReading = analogRead(TMP);
   float voltage = tempReading * aref_voltage;
   voltage /= 1024.0;
-  float temperatureC = (voltage - 0.5) * 100 ;
+  float temperatureC_float = (voltage - 0.5) * 100 ;
+  Serial.print("TEMPERATURE IS ");
+  Serial.println(temperatureC_float);
+  temperatureC = (int) temperatureC_float;
   Serial.print ("TMP_SNROR ");
   Serial.print(temperatureC); Serial.println(" degrees C");
-  return temperatureC;
 }
 
 float printThermistorData() {
@@ -568,6 +591,8 @@ float printThermistorData() {
   Serial.print(Temp);
   Serial.println(" *C");
 
+  therm = (int) Temp;
+
   return Temp;
 }
 
@@ -579,7 +604,7 @@ bool check_term_conditions(float lat, float lon, float alt, int flight_time) {
   float lon_min = -99999999;
   float lon_max = 999999;
   int alt_max = 99999999999;
-  int max_time = 5; // seconds
+  int max_time = 30; // seconds
   
   if (lat < lat_min) terminate = true;
   else if (lat > lat_max) terminate = true;
@@ -762,7 +787,9 @@ void loop() {
 
   */
 
-  float temp = getTemperature();
+  getTemperature();
+  double temp = temperatureC;
+  
   data += printHumData(sensorSpecs, temp);
   data += pessuredata() + ',';
   data += String(printThermistorData()) + ',';
@@ -798,8 +825,8 @@ void loop() {
 //    digitalWrite(42,LOW);
 //  }
 
-  if (check_term_conditions(latitude_, longitude_, altitude_, millis()/1000) && !terminated) {
-    terminated = true;
+  if (check_term_conditions(latitude_, longitude_, altitude_, millis()/1000) && terminated == 0) {
+    terminated = 1;
     termiante();
   }
   
