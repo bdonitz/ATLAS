@@ -327,9 +327,9 @@ void gps_get_position() {
       alt = (int32_t)buf[22] | (int32_t)buf[23] << 8 | 
         (int32_t)buf[24] << 16 | (int32_t)buf[25] << 24;
     }
-    //latitude_ = lat;
-    //longitude_ = lon;
-    //altitude_ = alt;
+    latitude_ = lat;  //re comment
+    longitude_ = lon;
+    altitude_ = alt;
     // 4 bytes of latitude/longitude (1e-7)
     lon_int=abs(lon/10000000);
     lon_dec=(labs(lon) % 10000000)/10;
@@ -382,3 +382,4 @@ void gps_get_time() {
     }
   }
 }
+

@@ -96,17 +96,17 @@
 #include "ax25modem.h"
 
 // TX and RX activation
-//#define APRS    // Comment to turn off APRS
-//#define LOS     // Comment to turn off LOS (line of sight)
+#define APRS    // Comment to turn off APRS
+#define LOS     // Comment to turn off LOS (line of sight)
 #define GPS     // Comment to turn off GPS
 
 // TX variables
-#define MTX2_FREQ 434.485 // LOS frequency, format 434.XXX
+#define MTX2_FREQ 434.65 // LOS frequency, format 434.XXX
 #define APRS_CALLSIGN "KM6QCM" // APRS callsign
 char callsign[9] = "KM6QCM";  // LOS callsign, MAX 9 CHARACTERS
 #define POWERSAVING      // Enables GPS powersaving mode
 #define TXDELAY 0        // Delay between sentence TX's
-int APRS_TX_INTERVAL = 79000;  // APRS TX interval in seconds
+int APRS_TX_INTERVAL = 12000;  // APRS TX interval in seconds
 
 // Cut variables
 float seaLevelhPa = 1016.8; // pressure at sea level, hPa (yes, hectopascals or mbar) UPDATE BEFORE LAUNCH
@@ -327,6 +327,7 @@ void setup()  {
 #ifdef LOS
   setMTX2Frequency();
   digitalWrite(MTX2_ENABLE, HIGH);
+  Serial.println("LOS transmission sent");
 #endif
 
 #ifdef GPS
@@ -585,17 +586,17 @@ bool check_term_conditions(float lat, float lon, float alt, int flight_time) {
   else if (lat > lat_max) terminate = true;
   else if (lon < lon_min) terminate = true;
   else if (lon > lon_max) terminate = true;
-  else if (alt > lat_max) terminate = true;
+  else if (alt > alt_max) terminate = true;
   else if (flight_time > max_time) terminate = true;
 
   return terminate;
 }
 
   void termiante() {
-     digitalWrite(FTU,HIGH);
+     //digitalWrite(FTU,HIGH);
      Serial.println("CUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
      wait(5000); // cut for 5 seconds
-     digitalWrite(FTU,LOW);
+     //digitalWrite(FTU,LOW);
      Serial.println("END CUT");
   }
 
@@ -897,3 +898,4 @@ void prepare_data() {
   battvsmooth[0] = batteryadc_v;
   battvaverage = (battvsmooth[0]+battvsmooth[1]+ battvsmooth[2]+battvsmooth[3]+battvsmooth[4])/5;
 }
+
