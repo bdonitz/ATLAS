@@ -247,8 +247,8 @@ ISR(TIMER1_COMPA_vect) {
         
     #endif
     #ifdef APRS
-        
-          snprintf(txstring,100, "$$$$$%s,%i,%02d:%02d:%02d,%s%i.%06ld,%s%i.%06ld,%ld,%d,%d,%i,%i,%i,%i,%i,%i,%i,%i",callsign,count, hour, minute, second,lat < 0 ? "-" : "",lat_int,lat_dec,lon < 0 ? "-" : "",lon_int,lon_dec, maxalt,sats,therm,kPa,x_tel,y_tel,z_tel,RH,TrueRH,aprs_attempts,terminated);
+
+          snprintf(txstring,100, "$$$$$%s,%i,%02d:%02d:%02d,%s%i.%06ld,%s%i.%06ld,%ld,%d,%d,%i,%i,%i,%i,%i,%i,%i,%i",callsign,count, hour, minute, second,lat < 0 ? "-" : "",lat_int,lat_dec,lon < 0 ? "-" : "",lon_int,lon_dec, maxalt,sats,temperatureC,therm,kPa,x_tel,y_tel,z_tel,RH,TrueRH,aprs_attempts,terminated);
         
     #endif
     crccat(txstring);
