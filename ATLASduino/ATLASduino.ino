@@ -96,17 +96,17 @@
 #include "ax25modem.h"
 
 // TX and RX activation
-#define APRS    // Comment to turn off APRS
-#define LOS     // Comment to turn off LOS (line of sight)
-#define GPS     // Comment to turn off GPS
+//#define APRS    // Comment to turn off APRS
+//#define LOS     // Comment to turn off LOS (line of sight)
+//#define GPS     // Comment to turn off GPS
 
 // TX variables
-#define MTX2_FREQ 433.100 // LOS frequency, format 434.XXX
+#define MTX2_FREQ 434.100 // LOS frequency, format 434.XXX
 #define APRS_CALLSIGN "KM6QCM" // APRS callsign
 char callsign[9] = "KM6QCM";  // LOS callsign, MAX 9 CHARACTERS
 #define POWERSAVING      // Enables GPS powersaving mode
 #define TXDELAY 0        // Delay between sentence TX's
-int APRS_TX_INTERVAL = 12000;  // APRS TX interval in seconds
+int APRS_TX_INTERVAL = 120000;  // APRS TX interval in seconds
 
 // Cut variables
 float seaLevelhPa = 1016.8; // pressure at sea level, hPa (yes, hectopascals or mbar) UPDATE BEFORE LAUNCH
@@ -163,9 +163,7 @@ int TrueRH = -999;
 const int MPX = 9;
 int kPa = -999;
 
-//FTU
-const int FTU = 42;
-int terminated = 0;
+
 
 //Magnetometer
 float mag = 0; 
@@ -317,8 +315,7 @@ void setup()  {
   pinMode(y_pin, OUTPUT);
   pinMode(z_pin, OUTPUT);
   
-  pinMode(FTU, OUTPUT); 
-  digitalWrite(FTU,LOW);
+
   //pinMode(CUT_1_PIN, OUTPUT); // dropper
   //pinMode(CUT_2_PIN, OUTPUT); // reflector
   //pinMode(CUT_3_PIN, OUTPUT); // cutdown
@@ -462,7 +459,7 @@ String printHumData(HIH4030 sensor, float temperature) {
 }
 
 String pessuredata() {
-  float pressure = readPressure(MPX);
+  float pressure = readPressure(MPX) + 2770.31;
   float millibars = pressure / 100;
   kPa = (int) pressure;
 
@@ -596,33 +593,7 @@ float printThermistorData() {
   return Temp;
 }
 
-bool check_term_conditions(float lat, float lon, float alt, int flight_time) {
-  bool terminate = false;
 
-  float lat_min = -99999;
-  float lat_max = 99999;
-  float lon_min = -99999999;
-  float lon_max = 999999;
-  int alt_max = 99999999999;
-  int max_time = 30; // seconds
-  
-  if (lat < lat_min) terminate = true;
-  else if (lat > lat_max) terminate = true;
-  else if (lon < lon_min) terminate = true;
-  else if (lon > lon_max) terminate = true;
-  else if (alt > lat_max) terminate = true;
-  else if (flight_time > max_time) terminate = true;
-
-  return terminate;
-}
-
-  void termiante() {
-     digitalWrite(FTU,HIGH);
-     Serial.println("CUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
-     wait(5000); // cut for 5 seconds
-     digitalWrite(FTU,LOW);
-     Serial.println("END CUT");
-  }
 
 //---Loop---------------------------------------------------------------------------------------------------------
 
@@ -644,7 +615,7 @@ void loop() {
 
 //APRS send, NOTE: needs sufficient satellite count
 #ifdef APRS
-  if (sats >= 4) { //MODIFIED
+  if (sats >= 0) { //MODIFIED
     if (aprs_tx_status == 0)
     {
       startTime = millis();
@@ -825,10 +796,7 @@ void loop() {
 //    digitalWrite(42,LOW);
 //  }
 
-  if (check_term_conditions(latitude_, longitude_, altitude_, millis()/1000) && terminated == 0) {
-    terminated = 1;
-    termiante();
-  }
+
   
 
   /*
