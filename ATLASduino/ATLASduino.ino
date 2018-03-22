@@ -292,17 +292,21 @@ void loop()
 #include "ax25modem.h"
 
 // TX and RX activation
-#define APRS    // Comment to turn off APRS
-#define LOS     // Comment to turn off LOS (line of sight)
-#define GPS     // Comment to turn off GPS
+//#define APRS    // Comment to turn off APRS
+//#define LOS     // Comment to turn off LOS (line of sight)
+//#define GPS     // Comment to turn off GPS
 
 // TX variables
+<<<<<<< HEAD
 #define MTX2_FREQ 434.65 // LOS frequency, format 434.XXX
+=======
+#define MTX2_FREQ 434.100 // LOS frequency, format 434.XXX
+>>>>>>> f646b4e214715c5f0cb5b2312dd67e50e7661748
 #define APRS_CALLSIGN "KM6QCM" // APRS callsign
 char callsign[9] = "KM6QCM";  // LOS callsign, MAX 9 CHARACTERS
 #define POWERSAVING      // Enables GPS powersaving mode
 #define TXDELAY 0        // Delay between sentence TX's
-int APRS_TX_INTERVAL = 12000;  // APRS TX interval in seconds
+int APRS_TX_INTERVAL = 120000;  // APRS TX interval in seconds
 
 // Cut variables
 float seaLevelhPa = 1016.8; // pressure at sea level, hPa (yes, hectopascals or mbar) UPDATE BEFORE LAUNCH
@@ -351,9 +355,16 @@ const int HUMIDITY = 10;
 // Pressure
 const int MPX = 9;
 
+<<<<<<< HEAD
 //FTU
 const int FTU = 42;
 bool terminated = false;
+=======
+
+
+//Magnetometer
+float mag = 0; 
+>>>>>>> f646b4e214715c5f0cb5b2312dd67e50e7661748
 
 #define HIH4030_SUPPLY 5
 #define HIH4030_OUT A10
@@ -502,8 +513,7 @@ void setup()  {
   pinMode(y_pin, OUTPUT);
   pinMode(z_pin, OUTPUT);
   
-  pinMode(FTU, OUTPUT); 
-  digitalWrite(FTU,LOW);
+
   //pinMode(CUT_1_PIN, OUTPUT); // dropper
   //pinMode(CUT_2_PIN, OUTPUT); // reflector
   //pinMode(CUT_3_PIN, OUTPUT); // cutdown
@@ -643,7 +653,7 @@ String printHumData(HIH4030 sensor, float temperature) {
 }
 
 String pessuredata() {
-  float pressure = readPressure(MPX);
+  float pressure = readPressure(MPX) + 2770.31;
   float millibars = pressure / 100;
   float kPa = pressure/1000;
 
@@ -768,6 +778,7 @@ float printThermistorData() {
   return Temp;
 }
 
+<<<<<<< HEAD
 bool check_term_conditions(float lat, float lon, float alt, int flight_time) {
   bool terminate = false;
 
@@ -795,6 +806,9 @@ bool check_term_conditions(float lat, float lon, float alt, int flight_time) {
      //digitalWrite(FTU,LOW);
      Serial.println("END CUT");
   }
+=======
+
+>>>>>>> f646b4e214715c5f0cb5b2312dd67e50e7661748
 
 //---Loop---------------------------------------------------------------------------------------------------------
 
@@ -816,7 +830,7 @@ void loop() {
 
 //APRS send, NOTE: needs sufficient satellite count
 #ifdef APRS
-  if (sats >= 4) { //MODIFIED
+  if (sats >= 0) { //MODIFIED
     if (aprs_tx_status == 0)
     {
       startTime = millis();
@@ -995,10 +1009,14 @@ void loop() {
 //    digitalWrite(42,LOW);
 //  }
 
+<<<<<<< HEAD
   if (check_term_conditions(latitude_, longitude_, altitude_, millis()/1000) && !terminated) {
     terminated = true;
     termiante();
   }
+=======
+
+>>>>>>> f646b4e214715c5f0cb5b2312dd67e50e7661748
   
 
   /*

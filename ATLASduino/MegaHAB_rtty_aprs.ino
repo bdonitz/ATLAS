@@ -68,10 +68,10 @@ void tx_aprs()
     //0, 0, 0, 0,
     "WIDE1", 1, "WIDE2",1,
     //"WIDE2", 1,
-    "!/%s%sO   /A=%06ld|%s|%s/%s,%d,%i,%i'C,%i,%i,%i,%i,%i,project zephyrus",
+    "!/%s%sO   /A=%06ld|%s|%s/%s,%d,%i,%i'C,%i,%i,%i,%i,%i,project ATLAS",
     ax25_base91enc(slat, 4, aprs_lat),
     ax25_base91enc(slng, 4, aprs_lon),
-    aprs_alt, stlm, comment,APRS_CALLSIGN, count, errorstatus,therm,kPa,terminated
+    aprs_alt, stlm, comment,APRS_CALLSIGN, count, errorstatus,therm,kPa
     );
   
 
@@ -274,13 +274,13 @@ ISR(TIMER1_COMPA_vect) {
         }
 =======
         
-        snprintf(txstring,100, "$$$$$%s,%i,%02d:%02d:%02d,%s%i.%06ld,%s%i.%06ld,%ld,%i,%d,%i,%i,%d,%d,%d,%d,%d,%d,%d,%d,%d,%i",callsign,count, hour, minute, second,lat < 0 ? "-" : "",lat_int,lat_dec,lon < 0 ? "-" : "",lon_int,lon_dec, maxalt,sats,x,y,z,therm,therm,kPa,x_tel,y_tel,z_tel,RH,TrueRH,mag,terminated);
+        snprintf(txstring,100, "$$$$$%s,%i,%02d:%02d:%02d,%s%i.%06ld,%s%i.%06ld,%ld,%i,%d,%i,%i,%d,%d,%d,%d,%d,%d,%d,%d,%d,%i",callsign,count, hour, minute, second,lat < 0 ? "-" : "",lat_int,lat_dec,lon < 0 ? "-" : "",lon_int,lon_dec, maxalt,sats,therm,therm,kPa,x_tel,y_tel,z_tel,RH,TrueRH,mag);
         
 >>>>>>> b3ab3d5fccf79a0b7dd9322eb070b49d79cd1e4e
     #endif
     #ifdef APRS
-        
-          snprintf(txstring,100, "$$$$$%s,%i,%02d:%02d:%02d,%s%i.%06ld,%s%i.%06ld,%ld,%d,%d,%i,%i,%i,%i,%i,%i,%i,%i",callsign,count, hour, minute, second,lat < 0 ? "-" : "",lat_int,lat_dec,lon < 0 ? "-" : "",lon_int,lon_dec, maxalt,sats,therm,kPa,x_tel,y_tel,z_tel,RH,TrueRH,aprs_attempts,terminated);
+
+          snprintf(txstring,100, "$$$$$%s,%i,%02d:%02d:%02d,%s%i.%06ld,%s%i.%06ld,%ld,%d,%d,%i,%i,%i,%i,%i,%i,%i,%i",callsign,count, hour, minute, second,lat < 0 ? "-" : "",lat_int,lat_dec,lon < 0 ? "-" : "",lon_int,lon_dec, maxalt,sats,temperatureC,therm,kPa,x_tel,y_tel,z_tel,RH,TrueRH,aprs_attempts);
         
     #endif
     crccat(txstring);
