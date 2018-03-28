@@ -655,7 +655,7 @@ String printHumData(HIH4030 sensor, float temperature) {
 String pessuredata() {
   float pressure = readPressure(MPX) + 2770.31;
   float millibars = pressure / 100;
-  float kPa = pressure/1000;
+  float kPa = pressure / 1000;
 
   String pressure_data = "";
 

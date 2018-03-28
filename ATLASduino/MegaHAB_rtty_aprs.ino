@@ -41,27 +41,8 @@ void tx_aprs()
 
   /* Construct the compressed telemetry format */
   ax25_base91enc(stlm + 0, 2, seq);
-<<<<<<< HEAD
-  if(tempsensors==1)
-  {
-    ax25_frame(
-    APRS_CALLSIGN, APRS_SSID,
-    "APRS", 0,
-    //0, 0, 0, 0,
-    "WIDE1", 1, "WIDE2",1,
-    //"WIDE2", 1,
-    "!/%s%sO   /A=%06ld|%s|%s/%s,%d,%i,%i'C,%i,%i,%i,%i,project atlas",
-    ax25_base91enc(slat, 4, aprs_lat),
-    ax25_base91enc(slng, 4, aprs_lon),
-    aprs_alt, stlm, comment,APRS_CALLSIGN, count, errorstatus,temperature1,alt_bmp,cut_1_progress,cut_2_progress,cut_3_progress
-    );
-  }
-  else
-  {
-=======
 
   
->>>>>>> b3ab3d5fccf79a0b7dd9322eb070b49d79cd1e4e
     ax25_frame(
     APRS_CALLSIGN, APRS_SSID,
     "APRS", 0,
@@ -152,7 +133,7 @@ static uint8_t *_ax25_callsign(uint8_t *s, char *callsign, char ssid) {
 //---RTTY----------------------------------------------------------------------------------------------
 
 void setMTX2Frequency() {
-//  Modify to change RTTY transmission
+  //Modify to change RTTY transmission
   float _mtx2comp;
   int _mtx2int;
   long _mtx2fractional;
@@ -261,22 +242,9 @@ ISR(TIMER1_COMPA_vect) {
     }
     lockvariables=1;
     #ifndef APRS
-<<<<<<< HEAD
-        if(tempsensors==1)
-        {
-          
-          snprintf(txstring,100, "$$$$$%s,%i,%02d:%02d:%02d,%s%i.%06ld,%s%i.%06ld,%ld,%i,%d,%i,%i,%i,%i,%i,%i",callsign,count, hour, minute, second,lat < 0 ? "-" : "",lat_int,lat_dec,lon < 0 ? "-" : "",lon_int,lon_dec, maxalt,alt_bmp,sats,temperature1,battvaverage,cut_1_progress,cut_2_progress,cut_3_progress);
-        }
-        else
-        {
-          
-          snprintf(txstring,100, "$$$$$%s,%i,%02d:%02d:%02d,%s%i.%06ld,%s%i.%06ld,%ld,%i,%d,%i,%i,%i,%i,%i,%i,%i",callsign,count, hour, minute, second,lat < 0 ? "-" : "",lat_int,lat_dec,lon < 0 ? "-" : "",lon_int,lon_dec, maxalt,alt_bmp,sats,temperature1,temperature2,battvaverage,cut_1_progress,cut_2_progress,cut_3_progress);
-        }
-=======
         
         snprintf(txstring,100, "$$$$$%s,%i,%02d:%02d:%02d,%s%i.%06ld,%s%i.%06ld,%ld,%i,%d,%i,%i,%d,%d,%d,%d,%d,%d,%d,%d,%d,%i",callsign,count, hour, minute, second,lat < 0 ? "-" : "",lat_int,lat_dec,lon < 0 ? "-" : "",lon_int,lon_dec, maxalt,sats,therm,therm,kPa,x_tel,y_tel,z_tel,RH,TrueRH,mag);
         
->>>>>>> b3ab3d5fccf79a0b7dd9322eb070b49d79cd1e4e
     #endif
     #ifdef APRS
 
@@ -428,7 +396,3 @@ ISR(TIMER2_OVF_vect) {
 
   byte >>= 1;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> b3ab3d5fccf79a0b7dd9322eb070b49d79cd1e4e
