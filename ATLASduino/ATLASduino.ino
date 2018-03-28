@@ -1,4 +1,83 @@
-#include <Wire.h>
+/*
+  February 2018
+  Benjamin Donitz
+  Carolyn Wendeln
+  Stephen Barr
+  Sunil Raghuraman
+  David Sweeney
+  Modified for use with new sensors and instruments
+
+  University of Michigan
+  Space 584: Space Instruments
+  Professor Susan Lepri
+  
+  ---
+  
+  July 2017
+  Keenan Albee
+  Seth Eisner
+  Modified from HABduino v4 software.
+
+  This code allows simulataneous APRS and 434.485 MHz transmission using an Arduino Mega and HABduino shield. It is Arduino MEGA compatible, unlike the original software.
+  The Arduino MEGA uses TIMER2 to perform PWM on pins 9 and 10, as opposed to pins 2,3 and 5 on the Uno. The timer regsters and ISR for TIMER2 have been updated to trigger pin 10 on overflow.
+  HABduino shields will need pins 3 and 10 connected together for successful APRS use.
+
+  This code reorganizes the HABduino v4 codebase into a more readable format. Useful modifiable variables are listed at the top, and relevant methods have been moved to separate files.
+
+  An option to control a relay shield through an altitude trigger is also included, along with a sensor suite over I2C.
+
+  ---
+
+  HABDuino Tracker
+  http://www.habduino.org
+  (c) Anthony Stirk M0UPU
+
+  March 2015 Version 4.0.0
+
+  This is for the Version 4 Habduino Hardware.
+
+  Credits :
+
+  Interrupt Driven RTTY Code : Evolved from Rob Harrison's RTTY Code.
+  Thanks to :  http://www.engblaze.com/microcontroller-tutorial-avr-and-arduino-timer-interrupts/
+  http://gammon.com.au/power
+
+  Suggestion to lock variables when making the telemetry string & Compare match register calculation from Phil Heron.
+  APRS Code mainly by Phil Heron MI0VIM
+
+  GPS Code modified from jonsowman and Joey flight computer CUSF
+  https://github.com/cuspaceflight/joey-m/tree/master/firmware
+
+  Thanks to :
+
+  Phil Heron
+  James Coxon
+  Dave Akerman
+
+  The UKHAS Community http://ukhas.org.uk
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  See <http://www.gnu.org/licenses/>.
+
+  The hardware design & code for Habduino is released under a Creative Commons License 3.0 Attribution-ShareAlike License :
+  See : http://creativecommons.org/licenses/by-sa/3.0/
+  It is YOUR responsibility to ensure this kit is used safely please review the safety section.
+
+  The latest code is available here : https://github.com/HABduino/HABduino
+*/
+
+//---Modifiable Variables---------------------------------------------------------------------------------------------------------
+
+/*#include <Wire.h>
 
 #include <TimerOne.h>
 
@@ -195,85 +274,7 @@ void loop()
   Serial.println("");
   delay(100);    
 }
-
-/*
-  February 2018
-  Benjamin Donitz
-  Carolyn Wendeln
-  Stephen Barr
-  Sunil Raghuraman
-  David Sweeney
-  Modified for use with new sensors and instruments
-
-  University of Michigan
-  Space 584: Space Instruments
-  Professor Susan Lepri
-  
-  ---
-  
-  July 2017
-  Keenan Albee
-  Seth Eisner
-  Modified from HABduino v4 software.
-
-  This code allows simulataneous APRS and 434.485 MHz transmission using an Arduino Mega and HABduino shield. It is Arduino MEGA compatible, unlike the original software.
-  The Arduino MEGA uses TIMER2 to perform PWM on pins 9 and 10, as opposed to pins 2,3 and 5 on the Uno. The timer regsters and ISR for TIMER2 have been updated to trigger pin 10 on overflow.
-  HABduino shields will need pins 3 and 10 connected together for successful APRS use.
-
-  This code reorganizes the HABduino v4 codebase into a more readable format. Useful modifiable variables are listed at the top, and relevant methods have been moved to separate files.
-
-  An option to control a relay shield through an altitude trigger is also included, along with a sensor suite over I2C.
-
-  ---
-
-  HABDuino Tracker
-  http://www.habduino.org
-  (c) Anthony Stirk M0UPU
-
-  March 2015 Version 4.0.0
-
-  This is for the Version 4 Habduino Hardware.
-
-  Credits :
-
-  Interrupt Driven RTTY Code : Evolved from Rob Harrison's RTTY Code.
-  Thanks to :  http://www.engblaze.com/microcontroller-tutorial-avr-and-arduino-timer-interrupts/
-  http://gammon.com.au/power
-
-  Suggestion to lock variables when making the telemetry string & Compare match register calculation from Phil Heron.
-  APRS Code mainly by Phil Heron MI0VIM
-
-  GPS Code modified from jonsowman and Joey flight computer CUSF
-  https://github.com/cuspaceflight/joey-m/tree/master/firmware
-
-  Thanks to :
-
-  Phil Heron
-  James Coxon
-  Dave Akerman
-
-  The UKHAS Community http://ukhas.org.uk
-
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  See <http://www.gnu.org/licenses/>.
-
-  The hardware design & code for Habduino is released under a Creative Commons License 3.0 Attribution-ShareAlike License :
-  See : http://creativecommons.org/licenses/by-sa/3.0/
-  It is YOUR responsibility to ensure this kit is used safely please review the safety section.
-
-  The latest code is available here : https://github.com/HABduino/HABduino
 */
-
-//---Modifiable Variables---------------------------------------------------------------------------------------------------------
 
 //Sensors
 #include <Wire.h>
@@ -297,11 +298,7 @@ void loop()
 //#define GPS     // Comment to turn off GPS
 
 // TX variables
-<<<<<<< HEAD
-#define MTX2_FREQ 434.65 // LOS frequency, format 434.XXX
-=======
 #define MTX2_FREQ 434.100 // LOS frequency, format 434.XXX
->>>>>>> f646b4e214715c5f0cb5b2312dd67e50e7661748
 #define APRS_CALLSIGN "KM6QCM" // APRS callsign
 char callsign[9] = "KM6QCM";  // LOS callsign, MAX 9 CHARACTERS
 #define POWERSAVING      // Enables GPS powersaving mode
@@ -342,29 +339,31 @@ int alt_bmp;
 const int x_pin = 13;
 const int y_pin = 14;
 const int z_pin = 15;
+int x_tel = 2;
+int y_tel = 2;
+int z_tel = 2;
 
 // TMP Sensor
 const int TMP = 12;
+int temperatureC = -999;
 
 // Thermistor
 const int THERMISTOR = 11;
+int therm = -999;
 
 // Humidity
 const int HUMIDITY = 10;
+int RH = -999;
+int TrueRH = -999;
 
 // Pressure
 const int MPX = 9;
+int kPa = -999;
 
-<<<<<<< HEAD
-//FTU
-const int FTU = 42;
-bool terminated = false;
-=======
 
 
 //Magnetometer
 float mag = 0; 
->>>>>>> f646b4e214715c5f0cb5b2312dd67e50e7661748
 
 #define HIH4030_SUPPLY 5
 #define HIH4030_OUT A10
@@ -533,7 +532,6 @@ void setup()  {
 #ifdef LOS
   setMTX2Frequency();
   digitalWrite(MTX2_ENABLE, HIGH);
-  Serial.println("LOS transmission sent");
 #endif
 
 #ifdef GPS
@@ -627,6 +625,8 @@ void setup()  {
 //---Sensor Functions
 String printHumData(HIH4030 sensor, float temperature) {
 
+  float RH_temp, TrueRH_temp;
+
   Serial.print("Temperature = ");
   Serial.print(temperature);
   float tempF = (temperature * 9 / 5) + 32;
@@ -635,18 +635,21 @@ String printHumData(HIH4030 sensor, float temperature) {
   Serial.print(sensor.vout());
   Serial.println(" V");
   Serial.print("Relative Humidity = ");
-  double RH = sensor.getSensorRH();
-  Serial.print(RH);
+  RH_temp = sensor.getSensorRH();
+  Serial.print(RH_temp);
   Serial.println(" %");
   Serial.print("True Relative Humidity = ");
-  double TrueRH = sensor.getTrueRH(temperature);
-  Serial.print(TrueRH);
+  TrueRH_temp = sensor.getTrueRH(temperature);
+  Serial.print(TrueRH_temp);
   Serial.println(" %");
+
+  RH = (int) RH_temp;
+  TrueRH = (int) TrueRH_temp;
 
   String hum_data = "";
   hum_data += String(temperature) + ",";
-  hum_data += String(RH) + ",";
-  hum_data += String(TrueRH) + ",";
+  hum_data += String(RH_temp) + ",";
+  hum_data += String(TrueRH_temp) + ",";
 
   return hum_data;
 
@@ -655,7 +658,7 @@ String printHumData(HIH4030 sensor, float temperature) {
 String pessuredata() {
   float pressure = readPressure(MPX) + 2770.31;
   float millibars = pressure / 100;
-  float kPa = pressure / 1000;
+  kPa = (int) pressure;
 
   String pressure_data = "";
 
@@ -681,7 +684,8 @@ float readPressure(int pin) {
 
 
 String printAccelData() {
-  float x, y, z;
+
+  float x,y,z;
 
   x = analogRead(x_pin);
   y = analogRead(y_pin);
@@ -724,18 +728,24 @@ String printAccelData() {
   accel_data += String(y) + ',';
   accel_data += String(z) + ',';
 
+  x_tel = (int) (x*100);
+  y_tel = (int) (y*100);
+  z_tel = (int) (z*100);
+
   return accel_data;
 }
 
-float getTemperature()
+void getTemperature()
 {
   int tempReading = analogRead(TMP);
   float voltage = tempReading * aref_voltage;
   voltage /= 1024.0;
-  float temperatureC = (voltage - 0.5) * 100 ;
+  float temperatureC_float = (voltage - 0.5) * 100 ;
+  Serial.print("TEMPERATURE IS ");
+  Serial.println(temperatureC_float);
+  temperatureC = (int) temperatureC_float;
   Serial.print ("TMP_SNROR ");
   Serial.print(temperatureC); Serial.println(" degrees C");
-  return temperatureC;
 }
 
 float printThermistorData() {
@@ -775,40 +785,12 @@ float printThermistorData() {
   Serial.print(Temp);
   Serial.println(" *C");
 
+  therm = (int) Temp;
+
   return Temp;
 }
 
-<<<<<<< HEAD
-bool check_term_conditions(float lat, float lon, float alt, int flight_time) {
-  bool terminate = false;
 
-  float lat_min = -99999;
-  float lat_max = 99999;
-  float lon_min = -99999999;
-  float lon_max = 999999;
-  int alt_max = 99999999999;
-  int max_time = 5; // seconds
-  
-  if (lat < lat_min) terminate = true;
-  else if (lat > lat_max) terminate = true;
-  else if (lon < lon_min) terminate = true;
-  else if (lon > lon_max) terminate = true;
-  else if (alt > alt_max) terminate = true;    ////// MAKE SURE THIS CHANGES ON GITHUB CODE!!!!!!!!!!!!!!!
-  else if (flight_time > max_time) terminate = true;
-
-  return terminate;
-}
-
-  void termiante() {
-     //digitalWrite(FTU,HIGH);
-     Serial.println("CUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
-     wait(5000); // cut for 5 seconds
-     //digitalWrite(FTU,LOW);
-     Serial.println("END CUT");
-  }
-=======
-
->>>>>>> f646b4e214715c5f0cb5b2312dd67e50e7661748
 
 //---Loop---------------------------------------------------------------------------------------------------------
 
@@ -973,7 +955,9 @@ void loop() {
 
   */
 
-  float temp = getTemperature();
+  getTemperature();
+  double temp = temperatureC;
+  
   data += printHumData(sensorSpecs, temp);
   data += pessuredata() + ',';
   data += String(printThermistorData()) + ',';
@@ -1009,14 +993,7 @@ void loop() {
 //    digitalWrite(42,LOW);
 //  }
 
-<<<<<<< HEAD
-  if (check_term_conditions(latitude_, longitude_, altitude_, millis()/1000) && !terminated) {
-    terminated = true;
-    termiante();
-  }
-=======
 
->>>>>>> f646b4e214715c5f0cb5b2312dd67e50e7661748
   
 
   /*
@@ -1112,4 +1089,3 @@ void prepare_data() {
   battvsmooth[0] = batteryadc_v;
   battvaverage = (battvsmooth[0]+battvsmooth[1]+ battvsmooth[2]+battvsmooth[3]+battvsmooth[4])/5;
 }
-
