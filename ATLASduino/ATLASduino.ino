@@ -94,9 +94,9 @@
 #include "ax25modem.h"
 
 // TX and RX activation
-//#define APRS    // Comment to turn off APRS
-//#define LOS     // Comment to turn off LOS (line of sight)
-//#define GPS     // Comment to turn off GPS
+#define APRS    // Comment to turn off APRS
+#define LOS     // Comment to turn off LOS (line of sight)
+#define GPS     // Comment to turn off GPS
 
 // TX variables
 #define MTX2_FREQ 433.100 // LOS frequency, format 434.XXX
@@ -159,7 +159,7 @@ int TrueRH = -999;
 
 // Pressure
 const int MPX = 9;
-int kPa = -999;
+int kPa = 0;
 
 
 
@@ -458,14 +458,15 @@ String printHumData(HIH4030 sensor, float temperature) {
 
 String pessuredata() {
   float pressure = readPressure(MPX) + 2770.31;
-  float millibars = pressure / 100;
-  kPa = (int) pressure;
+  float millibars = pressure / 100.0;
+  kPa = static_cast<int>(pressure);
+//  kPa = kPa * 100;
 
   String pressure_data = "";
 
   Serial.println();
   Serial.print("Pressure = ");
-  Serial.print(kPa);
+  Serial.print(pressure);
   Serial.println(" kPa");
   Serial.print("Pressure = ");
   Serial.print(millibars);
@@ -539,7 +540,7 @@ String printAccelData() {
 void getTemperature()
 {
   int tempReading = analogRead(TMP);
-  float voltage = tempReading * aref_voltage;
+  float voltage = tempReading * 4.25;
   voltage /= 1024.0;
   float temperatureC_float = (voltage - 0.5) * 100 ;
   Serial.print("TEMPERATURE IS ");
@@ -613,7 +614,7 @@ void loop() {
 
 //APRS send, NOTE: needs sufficient satellite count
 #ifdef APRS
-  if (sats >= 0) { //MODIFIED
+  if (sats >= 4) { //MODIFIED
     if (aprs_tx_status == 0)
     {
       startTime = millis();
